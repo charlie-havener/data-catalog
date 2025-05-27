@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Catalog{% endblock %}
+
+{% block content %}
+
+<!-- Start search --!>
+<div class="sticky z-60 top-16 w-full bg-gray-100 h-30 border-b border-gray2-benchmark px-4 py-4">
+	<div class="grid grid-cols-1 place-items-center">
+		<div class="px-6 w-full md:max-w-7xl">
+
+			<form method="get">
+				<div class="flex">
+					<div class="relative w-full">
+						<div class="relative">
+							<div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+								<svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+									<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+								</svg>
+							</div>
+							<input type="text" name="q" class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50" placeholder="Search catalog objects" {% if query %}value={{ query }} {% endif %}/>
+							<button type="submit" class="text-white absolute end-2.5 bottom-2.5 bg-blue-benchmark hover:bg-blue-benchmark/80 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2">Search</button>
+						</div>
+					</div>
+				</div>
+
+				<ul class="flex">
+					<!-- General filter that includes all types -->
+					<li class="p-1">
+						<input type="radio" id="filter-all" name="filter" value="-1" class="hidden peer search-radio" {% if filter is None or filter == "-1" %} checked {% endif %}required />
+						<label for="filter-all" class="inline-flex items-center justify-between p-2 py-1 text-center text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-800 hover:bg-gray-200 hover:border-gray-300">All</label>
+					</li>
+
+					<!-- The available types --!>
+					{% if object_types %}
+						{% for t in object_types %}
+						<li class="p-1">
+						<input type="radio" id="filter-{{ t.type_name }}" name="filter" value="{{ t.id }}" class="hidden peer search-radio" {% if filter == t.id|stringformat:"i" %} checked {% endif %} required />
+							<label for="filter-{{ t.type_name }}" class="inline-flex items-center justify-between p-2 py-1 text-center text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-800 hover:bg-gray-200 hover:border-gray-300">{{ t.type_name }}</label>
+						</li>
+						{% endfor %}
+					{% endif %}
+				</ul>
+
+			</form>
+
+		</div>
+	</div>
+</div>
+<!-- End search --!>
+
+<!-- Start object list -->
+{% if page_obj %}
+<div class="grid grid-cols-1 gap-4 p-4 place-items-center">
+	{% for object in page_obj %}
+		<div class="p-2 bg-visualbg-benchmark border border-gray-200 rounded-lg shadow-md shadow-gray-200 w-full md:max-w-7xl">
+			<div class="flex justify-between">
+				<div class="flex justify-start gap-3 mb-2">
+					<span class="text-xl font-bold tracking-tight text-text-benchmark">{{ object.object_name }}</span>
+					<span class="inline-flex items-center px-1 my-0 text-xs tracking-tight text-gray2-benchmark">{{ object.object_type.type_name}}</span>
+				</div>
+				<a href="{% url 'catalog:detail' object.id %}" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-blue-benchmark cursor-pointer">
+					View
+					<svg class="w-2.5 h-2.5 ms-2 stroke-blue-benchmark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+					</svg>
+				</a>
+			</div>
+			<p class="font-normal text-sm text-gray4-benchmark line-clamp-2">{% if object.description %} {{ object.description }} {% else %}No Description Available{% endif %}</p>
+		</div>
+
+	{% endfor %}
+</div>
+{% endif %}
+<!-- End object list -->
+
+
+<!-- Start Pagination -->
+<div class="grid grid-cols-1 gap-4 p-4 place-items-center">
+	<nav class="align-center">
+		<ul class="inline-flex -space-x-px text-sm">
+			{% for i in page_range %}
+				{% if page_obj.number == i %}
+					<li>
+						<a href="#" aria-current="page" class="flex items-center justify-center px-3 h-8 text-blue-benchmark border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700">{{ page_obj.number }}</a>
+					</li>
+				{% elif i == "…" %}
+					<li>
+						<p class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300">…</a>
+					</li>
+				{% else %}
+					<li>
+						<a href="?{% if query %}q={{ query }}&{% endif %}page={{ i }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">{{ i }}</a>
+					</li>
+				{% endif %}
+			{% endfor %}
+		</ul>
+	</nav>
+</div>
+<!-- End Pagination -->
+
+{% endblock %}

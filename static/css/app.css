@@ -1,0 +1,21 @@
+@import "tailwindcss"
+source("../../"); /* base dir relative to this file */
+
+@theme {
+  --color-blue-benchmark: #00548B;
+  --color-lightblue-benchmark: #4AC1E0;
+  --color-darkblue-benchmark: #00335B;
+  --color-pagebg-benchmark: #F1F2F7;
+  --color-visualbg-benchmark: #DCDCDC;
+  --text-tiny: 0.7rem;
+
+
+  /* unused ?? */
+  --color-orange-benchmark: #FF6B0E;
+  --color-gray1-benchmark: #B2B2B2;
+  --color-gray2-benchmark: #A7A8A9;
+  --color-gray3-benchmark: #696D74;
+  --color-gray4-benchmark: #555A62;
+  --text-teenytiny: 0.625rem;
+}
+

@@ -1,0 +1,33 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{% block title %}My App{% endblock %}</title>
+
+	<!-- compiled tailwind css file --!>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/tailwind.css' %}" defer>
+
+	{% block extra_imports %}
+	{% endblock %}
+
+</head>
+<body class="bg-pagebg-benchmark">
+	<header>
+		{% include '_topbar.html' %}
+		{% include '_sidebar.html' %}
+	</header>
+
+  <main>
+		{# ml-# and mt-# are based on the width and height of the top and side bars #}
+		<div class="ml-16 mt-16">
+			{% block content %}
+			{% endblock %}
+		</div>
+  </main>
+
+  <footer>
+    <!-- Footer content -->
+  </footer>
+</body>
+</html>
