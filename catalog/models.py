@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import UniqueConstraint, CheckConstraint, F
 from django.core.exceptions import ValidationError
+from mdeditor.fields import MDTextField
 
 
 class ObjectTypes(models.Model):
@@ -18,6 +19,7 @@ class Objects(models.Model):
     object_type = models.ForeignKey(ObjectTypes, on_delete=models.CASCADE)
     object_name = models.CharField("name", max_length=200)
     description = models.CharField(max_length=2000, null=True, blank=True)
+    md = MDTextField(null=True, blank=True)
 
     # ensure that the type + name combo is unique
     class Meta:

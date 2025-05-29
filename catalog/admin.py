@@ -62,7 +62,7 @@ class ObjectsAdmin(admin.ModelAdmin):
         return formfield
 
     fieldsets = [
-        ("Object", {"fields": ["object_name", "description", "object_type"]})
+        ("Object", {"fields": ["object_name", "description", "object_type", "md"]})
     ]
 
     inlines = [ColumnsInline, OwnersInline, RelationshipsInline]

@@ -1,11 +1,16 @@
 {% extends 'base.html' %}
 
+{% load catalog_markdown_extras %}
+{% load static %}
+
 {% block title %}Catalog{% if obj %} - {{ obj.object_name }}{% endif %}{% endblock %}
 
 {% block extra_imports %}
 <script src="https://unpkg.com/cytoscape@3.24.0/dist/cytoscape.min.js"></script>
 <script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
 <script src="https://unpkg.com/cytoscape-dagre@2.5.0/cytoscape-dagre.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.8.1/github-markdown-light.min.css" integrity="sha512-X175XRJAO6PHAUi8AA7GP8uUF5Wiv+w9bOi64i02CHKDQBsO1yy0jLSKaUKg/NhRCDYBmOLQCfKaTaXiyZlLrw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/pygments.css' %}" defer>
 {% endblock %}
 
 {% block content %}
@@ -16,30 +21,50 @@
 	<div class="grid grid-cols-1 place-items-center">
 		<div class="px-6 w-full md:max-w-7xl">
 
-			<div class="flex items-center space-x-3">
-				<span class="flex-0 bg-white-benchmark text-text-benchmark text-xs font-medium ml-3 px-2 py-0.25 rounded-full border border-gray2-benchmark">
-					{{ obj.object_type.type_name }}
-				</span>
-				<div class="flex-1 min-w-0">
-					<p class="text-2xl font-semibold text-gray-900">
-						{{ obj.object_name }}
-					</p>
+			<div class="flex items-center justify-between">
+				<div class="flex items-center justify-start space-x-3">
+					<span class="flex-0 bg-white-benchmark text-text-benchmark text-xs font-medium ml-3 px-2 py-0.25 rounded-full border border-gray2-benchmark">
+						{{ obj.object_type.type_name }}
+					</span>
+					<div class="flex-1 min-w-0">
+						<p class="text-2xl font-semibold text-gray-900">
+							{{ obj.object_name }}
+						</p>
+					</div>
+				</div>
+				<div class="flex items-center justify-end mr-6">
+					<a href="/admin/catalog/objects/{{obj.id}}/change" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-blue-benchmark cursor-pointer">
+						Edit Object
+						<svg class="w-2.5 h-2.5 ms-2 stroke-blue-benchmark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+						</svg>
+					</a>
 				</div>
 			</div>
 
 			<div class="absolute bottom-0 text-sm font-medium text-center text-gray-500">
 				<ul class="flex flex-wrap">
+
 					<li class="me-2 px-2">
 						<a href="#overview" class="inline-block border-b-1 border-transparent hover:text-gray-800 hover:border-gray-800">Overview</a>
 					</li>
+
+					{% if obj.md %}
+					<li class="me-2 px-2">
+						<a href="#markdown" class="inline-block border-b-1 border-transparent hover:text-gray-800 hover:border-gray-800">Markdown</a>
+					</li>
+					{% endif %}
+
 					{% if columns %}
 					<li class="me-2 px-2">
 						<a href="#columns" class="inline-block border-b-1 border-transparent hover:text-gray-800 hover:border-gray-800">Columns</a>
 					</li>
 					{% endif %}
+
 					<li class="me-2 px-2">
 						<a href="#lineage" class="inline-block border-b-1 border-transparent hover:text-gray-800 hover:border-gray-800">Lineage</a>
 					</li>
+
 				</ul>
 			</div>
 		</div>
@@ -55,20 +80,10 @@
 		<h5 class="mb-2 text-2xl font-bold tracking-tight text-text-benchmark text-left">Overview</h5>
 		<div class="px-6 py-4 bg-visualbg-benchmark border border-gray-200 rounded-lg shadow-md shadow-gray-200">
 
-			<div class="flex items-center justify-between">
-				<div class="flex items-center justify-start">
-					<p class="py-2 text-2xl font-semibold text-gray-900">
-						{{ obj.object_name }}
-					</p>
-				</div>
-				<div class="flex items-center justify-end mr-6">
-					<a href="/admin/catalog/objects/{{obj.id}}/change" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-blue-benchmark cursor-pointer">
-						Edit Object
-						<svg class="w-2.5 h-2.5 ms-2 stroke-blue-benchmark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-						</svg>
-					</a>
-				</div>
+			<div class="flex items-center justify-start">
+				<p class="py-2 text-2xl font-semibold text-gray-900">
+					{{ obj.object_name }}
+				</p>
 			</div>
 
 			<div class="py-2 text-text-benchmark text-sm font-medium">
@@ -107,6 +122,33 @@
 		</div>
 	</div>
 
+	<!-- Markdown --!>
+	{% if obj.md %}
+		<style>
+			.markdown-body {
+				box-sizing: border-box;
+				min-width: 200px;
+				max-width: 980px;
+				margin: 0 auto;
+				padding: 45px;
+				background-color: var(--color-visualbg-benchmark);
+			}
+
+			@media (max-width: 767px) {
+				.markdown-body {
+					padding: 15px;
+				}
+			}
+		</style>
+	<div id="markdown" class="py-6 scroll-mt-35 w-full md:max-w-7xl">
+		<h5 class="mb-2 text-2xl font-bold tracking-tight text-text-benchmark text-left">Markdown</h5>
+		<div class="px-6 py-4 bg-visualbg-benchmark border border-gray-200 rounded-lg shadow-md shadow-gray-200">
+			<div class="markdown-body">
+				{{ obj.md | markdown | safe }}
+			</div>
+		</div>
+	</div>
+	{% endif %}
 
 	<!-- Columns --!>
 	{% if columns %}

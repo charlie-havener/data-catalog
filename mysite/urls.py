@@ -10,4 +10,5 @@ urlpatterns = [
     path("home/", include("home.urls")),
     path("catalog/", include("catalog.urls")),
     path('admin/', admin.site.urls),
+    path('mdeditor/', include('mdeditor.urls')),
 ]
